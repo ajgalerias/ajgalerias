@@ -1,0 +1,133 @@
+<html>
+<head>
+	<title>INGRESA IMAGEN</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<link rel="stylesheet" href="layout/styles/layout.css" type="text/css" />
+	<h1><b>INGRESA LA IMAGEN<h2><b>
+</head>
+<body id="top">
+<div class="wrapper col2">
+  <div id="header">
+    <div id="logo">
+      <h1><a href="index.html">PhotoBusiness</a></h1>
+      <p>Free Website Template</p>
+    </div>
+    <ul id="topnav">
+      <li class="last"><a href="#">Link Text</a></li>
+      <li><a href="#">DropDown</a>
+        <ul>
+          <li><a href="#">Link 1</a></li>
+          <li><a href="#">Link 2</a></li>
+          <li><a href="#">Link 3</a></li>
+        </ul>
+      </li>
+      <li><a href="pages/full-width.html">Full Width</a></li>
+      <li><a href="pages/style-demo.html">Style Demo</a></li>
+      <li class="active"><a href="index.html">Home</a></li>
+    </ul>
+    <br class="clear" />
+  </div>
+</div>
+
+<p><br>POR SEGURIDAD DEBE INTRODUCIR LOS DATOS PERSONALES HASTA QUE NO SE HAYA ECHO UN LOGIN CON SESIONES</br><p>
+ 
+	<form id='registro' name='registro' onSubmit='return validarDatos()' action="RegistrarImagen.php" method="post" enctype="multipart/form-data">
+	<!-- hay q meterle validacion onSubmit='return validacion()'-->
+	  <label for="Img"><b>Ingresar archivo:</b> </label>
+	  <input name="Img" type="file" accept="image/*"  id="Img" >
+	  <br/><br/> 
+	  <label for="user"><b>User :</b> </label>
+	  <input type="text" name="User" id="User">
+	  <br/> <br/>
+	  <label for="password"><b>Contrase?a (*):</b> </label>
+	  <input type="password" name="Password" id="Password" onchange="enviarPass()">
+      <br/> <br/>
+	<input type="submit" value="Enviar">
+	</form>
+</body>
+</html>
+
+<script language="javascript">
+function validarUser(){
+  var frm = document.getElementById("registro");
+  
+     if(frm.elements[2].value=='' ){
+         return false;
+     } 
+      else return true;
+  }
+
+function validarPass(){
+
+ var frm = document.getElementById("registro");
+
+   if(frm.elements[3].value.length<6){
+        return false;
+   }
+     else return true;
+   }
+function validarDatos(){ <!-- falta validar img-->
+	if(validarUser==false){
+	alert("El user esta vacio \n" );
+    return false;
+	}
+	if(validarPass==false){
+	alert("La contrase?a tiene que tener minimo 6 caracteres");
+    return false;
+	}
+}
+</script>
+<?php
+header('Content-Type: text/html; charset=UTF-8');
+//obtenemos datos del form
+$user=$_POST['user'];
+$password=$_POST['Password'];
+//guardamos la foto
+$dir_destino = "Fotos/";
+$archivo_destino = $dir_destino . basename($_FILES["Img"]["name"]);
+move_uploaded_file($_FILES["Img"]["tmp_name"], $archivo_destino);
+//VALIDACIONES
+function validarUser($user){
+    
+	if ($user==''){
+        return false;
+    }
+    return true;
+}
+function validarPass($password){
+	if(strlen($password)<6){
+       		return false; 
+    }
+	return true;
+}
+//COMPROBACIONES
+if(validarUser($user) == false ){
+  echo "El user esta vacio";
+  exit;
+}
+if(validarPass($password) == false){
+  echo "La contrase?a introducida debe tener minimo 6 caracteres";
+  exit;
+}
+
+
+
+
+
+
+
+
+//conectamos con la bd
+ $mysqli=mysqli_connect("mysql.hostinger.es","u670644183_root","julenadri","u670644183_quiz") or die(mysql_error());
+   if (!$mysqli) {
+   echo "Fallo al conectar a MySQL: " . $mysqli->connect_error;
+   exit;
+  $sql="INSERT INTO Imagen (user, password, Img) VALUES( '$user','$password','".$archivo_destino."')";
+  if (!mysqli_query($mysqli ,$sql)){
+  		die('Error: ' . mysqli_error($mysqli));
+	}
+echo "A?adido una imagen a la base de datos";
+mysqli_close($mysqli);
+
+}
+?>
